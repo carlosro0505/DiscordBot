@@ -27,6 +27,19 @@ bot.command :weather do |event, *args|
   end
 end
 
+# Command to get air pollution
+bot.command :pollution do |event, *args|
+  city = args.join(' ')
+  pollution_data = get_pollution(city, api_key)
+
+  if pollution_data
+    aqi = pollution_data['list'][0]['main']['aqi']
+    event.respond "Air pollution in #{city}: AQI (Air Quality Index) - #{aqi}"
+  else
+    event.respond "Sorry, I couldn't find air pollution data for #{city}."
+  end
+end
+
 def get_weather(city, api_key)
   url = "http://api.openweathermap.org/data/2.5/weather?q=#{CGI.escape(city)}&appid=#{api_key}&units=metric"
   
@@ -35,6 +48,21 @@ def get_weather(city, api_key)
     return JSON.parse(response)
   rescue OpenURI::HTTPError => e
     puts "Error fetching weather data: #{e.message}"
+    return nil
+  end
+end
+
+def get_pollution(city, api_key)
+  url = "http://api.openweathermap.org/data/2.5/air_pollution?q=#{CGI.escape(city)}&appid=#{api_key}"
+  
+  puts "Fetching pollution data from: #{url}"
+  
+  begin
+    response = URI.open(url).read
+    puts "Received response: #{response}"
+    return JSON.parse(response)
+  rescue OpenURI::HTTPError => e
+    puts "Error fetching pollution data: #{e.message}"
     return nil
   end
 end
