@@ -40,6 +40,21 @@ bot.command :pollution do |event, *args|
   end
 end
 
+bot.command :forecast do |event, *args|
+  city = args.join(' ')
+  forecast_data = get_forecast(city, api_key)
+
+  if forecast_data
+    forecast = forecast_data['list'][1]  # Access the second element (index 1) for next forecast
+    temperature = forecast['main']['temp']
+    description = forecast['weather'].first['description']
+    event.respond "Weather forecast for #{city}: #{temperature}°C, #{description.capitalize}"
+  else
+    event.respond "Sorry, I couldn't find the weather forecast for #{city}."
+  end
+end
+
+
 def get_weather(city, api_key)
   url = "http://api.openweathermap.org/data/2.5/weather?q=#{CGI.escape(city)}&appid=#{api_key}&units=metric"
   
@@ -56,13 +71,24 @@ def get_pollution(city, api_key)
   url = "http://api.openweathermap.org/data/2.5/air_pollution?q=#{CGI.escape(city)}&appid=#{api_key}"
   
   puts "Fetching pollution data from: #{url}"
-  
   begin
     response = URI.open(url).read
     puts "Received response: #{response}"
     return JSON.parse(response)
   rescue OpenURI::HTTPError => e
     puts "Error fetching pollution data: #{e.message}"
+    return nil
+  end
+end
+
+def get_forecast(city, api_key)
+  url = "http://api.openweathermap.org/data/2.5/forecast?q=#{CGI.escape(city)}&appid=#{api_key}&units=metric"
+  
+  begin
+    response = URI.open(url).read
+    return JSON.parse(response)
+  rescue OpenURI::HTTPError => e
+    puts "Error fetching forecast data: #{e.message}"
     return nil
   end
 end
