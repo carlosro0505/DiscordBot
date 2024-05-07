@@ -48,7 +48,7 @@ bot.command :forecast do |event, *args|
     forecast = forecast_data['list'][1]  # Access the second element (index 1) for next forecast
     temperature = forecast['main']['temp']
     description = forecast['weather'].first['description']
-    event.respond "Weather forecast for #{city}: #{temperature}°C, #{description.capitalize}"
+    event.respond "3-hour forecast for #{city}: #{temperature}°C, #{description.capitalize}"
   else
     event.respond "Sorry, I couldn't find the weather forecast for #{city}."
   end
