@@ -1,0 +1,1 @@
+Created a bot using Ruby that can be applied to any discord channels. This is an interactive bot that can give you forecasts, current weather, and current pollution conditions for any city. Connected to OpenWeatherMap API. 
